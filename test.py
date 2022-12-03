@@ -1,4 +1,3 @@
-#connect to sqlite
 import sqlite3
 
 '''command = """CREATE TABLE edi867 (
@@ -8,13 +7,10 @@ import sqlite3
             meter_role text,
             meter_type text,
             quantity text
-            )"""'''
-#cursor.execute(command)
+            )"""
+cursor.execute(command)'''
 
-def createTable(name):
-    cursor.execute('CREATE TABLE IF NOT EXISTS {name} (unique_identification text)')
-
-#connect to database    
+#connect db    
 conn = sqlite3.connect('edi.db')
 cursor = conn.cursor()
 
@@ -26,9 +22,8 @@ cr_name = "CR NAME"
 meter_role = "REF~JH"
 meter_type = "REF~MT"
 quantity = "QTY~QD"
-    
 
-#read textFile and convert to list
+#read file and convert to list
 def readFile(f):
     file = open(f, "r")
     
@@ -36,31 +31,28 @@ def readFile(f):
         measures.append(x)
 
 #iterate through list and insert into dataframe if condition true
-def extractData(measure, column):
+def extract(measure, column):
     for data in measures:
         if measure in data:
             cursor.execute(f"INSERT INTO edi867 ({column}) VALUES ('{data}')")
-            
 
-def safeData(file):
+def run(file):
 
     #read
     readFile(file)
 
     #extract
-    extractData(u_id, "unique_identification")
-    extractData(esi_id, "esi_id")
-    extractData(cr_name, "cr_name")
-    extractData(meter_role, "meter_role")
-    extractData(meter_type, "meter_type")
-    extractData(quantity, "quantity")
+    extract(u_id, "unique_identification")
+    extract(esi_id, "esi_id")
+    extract(cr_name, "cr_name")
+    extract(meter_role, "meter_role")
+    extract(meter_type, "meter_type")
+    extract(quantity, "quantity")
 
     conn.commit()
     conn.close()
-    print("done")
 
-createTable("test")
-safeData("gistfile3.txt")
+run("gistfile3.txt")
 
 
 
